@@ -22,5 +22,7 @@ base = dict(
     wait_iti=2,
 
     trials_per_run=250,
+    perform_acc_target=.82,
+    perform_rt_target=1,
 
 )

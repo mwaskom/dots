@@ -51,6 +51,9 @@ def run_trial(exp, info):
     exp.wait_until(exp.iti_end, iti_duration=info["iti"])
 
     # Wait for trial onset
+    exp.tracker.send_message("start trial {}".format(info["trial"]))
+    info["fp_on"] = exp.clock.getTime()
+    exp.tracker.send_message("fp_on")
     res = exp.wait_until(AcquireFixation(exp),
                          timeout=exp.p.wait_fix,
                          draw="fix")
@@ -61,6 +64,8 @@ def run_trial(exp, info):
         return info
 
     # Show the targets
+    info["targ_on"] = exp.clock.getTime()
+    exp.tracker.send_message("targ_on")
     res = exp.wait_until(timeout=info["wait_pre_stim"],
                          draw=["fix", "targets"],
                          check_abort=True)
@@ -72,8 +77,14 @@ def run_trial(exp, info):
         exp.s.dots.update(info["dot_dir"], info["dot_coh"])
         exp.draw(["fix", "targets", "dots"])
 
+        if not i:
+            info["dots_on"] = exp.clock.getTime()
+            exp.tracker.send_message("dots_on")
+
         if not exp.check_fixation():
             rt = rt_clock.getTime()
+            info["dots_off"] = exp.clock.getTime()
+            exp.tracker.send_message("dots_off")
             res = exp.wait_until(AcquireTarget(exp, info["target"]),
                                  draw="targets")
             break
@@ -92,9 +103,13 @@ def run_trial(exp, info):
         info["rt"] = rt
 
     # Give feedback
+    info["fb_on"] = exp.clock.getTime()
+    exp.tracker.send_message("fb on")
     exp.sounds[info["result"]].play()
     exp.show_feedback("targets", info["result"], info["response"])
     exp.wait_until(timeout=exp.p.wait_feedback, draw="targets")
     exp.s.targets.color = exp.p.target_color
+
+    exp.tracker.send_message("end trial {}".format(info["trial"]))
 
     return info
