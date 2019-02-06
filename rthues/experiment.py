@@ -48,6 +48,14 @@ def generate_trials(exp):
 
 def run_trial(exp, info):
 
+    # Set target colors
+    jch_colors = [
+        (exp.s.dots.lightness, exp.s.dots.chromacity, exp.p.dot_hue[0]),
+        (exp.s.dots.lightness, exp.s.dots.chromacity, exp.p.dot_hue[1]),
+    ]
+    exp.s.targets.color = [exp.s.dots.jch_to_psychopy_rgb(c)
+                           for c in jch_colors]
+
     # Inter-trial interval
     exp.wait_until(exp.iti_end, iti_duration=info["iti"])
 
