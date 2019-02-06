@@ -25,4 +25,6 @@ base = dict(
     perform_acc_target=.82,
     perform_rt_target=1,
 
+    output_template="data/{subject}/{session}/dirs_{time}",
+
 )
